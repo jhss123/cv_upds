@@ -1,46 +1,41 @@
+return (
+  <Protected>
+    <div className="container-card p-6 md:p-8">
+      <h1>Evaluar CV</h1>
+      <p className="mt-2 text-sm">Pega tu CV en texto y obtén un puntaje con recomendaciones.</p>
 
-"use client";
-import { useState } from "react";
-import Protected from "@/components/Protected";
-
-export default function EvaluarCV() {
-  const [role, setRole] = useState("");
-  const [cvText, setCvText] = useState("");
-  const [result, setResult] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-
-  const onEval = async () => {
-    setLoading(true);
-    const r = await fetch("/api/evaluate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cvText, role })
-    });
-    const json = await r.json();
-    setResult(json);
-    setLoading(false);
-  };
-
-  return (
-    <Protected>
-      <div className="space-y-3">
-        <h1 className="text-2xl font-bold">Evaluar CV</h1>
-        <input className="border p-2 w-full rounded" placeholder="Rol objetivo (opcional)" value={role} onChange={e=>setRole(e.target.value)} />
-        <textarea className="border p-3 w-full h-60 rounded" placeholder="Pega tu CV aquí..." value={cvText} onChange={e=>setCvText(e.target.value)} />
-        <button onClick={onEval} disabled={loading} className="bg-blue-600 text-white px-4 py-2 rounded">
+      <div className="mt-6 grid gap-4">
+        <input className="input" placeholder="Rol objetivo (opcional)" value={role} onChange={e=>setRole(e.target.value)} />
+        <textarea className="textarea" placeholder="Pega tu CV aquí..." value={cvText} onChange={e=>setCvText(e.target.value)} />
+        <button onClick={onEval} disabled={loading} className="btn-primary w-fit">
           {loading ? "Evaluando..." : "Evaluar"}
         </button>
-        {result && (
-          <div className="bg-white border rounded p-4">
-            <p className="text-xl font-semibold">Puntaje: {result.score}</p>
-            <p className="mt-2">{result.summary}</p>
-            <h3 className="font-semibold mt-3">Mejoras sugeridas</h3>
-            <ul className="list-disc ml-6">{(result.improvements||[]).map((x:string,i:number)=><li key={i}>{x}</li>)}</ul>
-            <h3 className="font-semibold mt-3">Preguntas faltantes</h3>
-            <ul className="list-disc ml-6">{(result.missing_questions||[]).map((x:string,i:number)=><li key={i}>{x}</li>)}</ul>
-          </div>
-        )}
       </div>
-    </Protected>
-  );
-}
+
+      {result && (
+        <div className="mt-8 grid gap-6 md:grid-cols-3">
+          <div className="container-card p-4">
+            <div className="text-5xl font-bold text-blue-700">{result.score ?? "-"}</div>
+            <div className="mt-1 text-sm text-slate-600">Puntaje</div>
+          </div>
+          <div className="container-card p-4 md:col-span-2">
+            <h3 className="font-semibold">Resumen</h3>
+            <p className="mt-1">{result.summary}</p>
+          </div>
+          <div className="container-card p-4">
+            <h3 className="font-semibold">Mejoras</h3>
+            <ul className="mt-2 list-disc pl-6 text-sm">
+              {(result.improvements||[]).map((x:string,i:number)=><li key={i}>{x}</li>)}
+            </ul>
+          </div>
+          <div className="container-card p-4 md:col-span-2">
+            <h3 className="font-semibold">Preguntas faltantes</h3>
+            <ul className="mt-2 list-disc pl-6 text-sm">
+              {(result.missing_questions||[]).map((x:string,i:number)=><li key={i}>{x}</li>)}
+            </ul>
+          </div>
+        </div>
+      )}
+    </div>
+  </Protected>
+);
