@@ -1,30 +1,20 @@
+return (
+  <Protected>
+    <div className="container-card p-6 md:p-8">
+      <h1>Corregir / Mejorar CV</h1>
+      <p className="mt-2 text-sm">Reescritura profesional con bullets y sugerencias.</p>
 
-"use client";
-import { useState } from "react";
-import Protected from "@/components/Protected";
+      <textarea className="textarea mt-6" placeholder="Pega tu CV..." value={cvText} onChange={e=>setCvText(e.target.value)} />
+      <div className="mt-4">
+        <button onClick={onFix} disabled={loading} className="btn-primary">{loading ? "Procesando..." : "Corregir"}</button>
+      </div>
 
-export default function CorregirCV() {
-  const [cvText, setCvText] = useState("");
-  const [out, setOut] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const onFix = async () => {
-    setLoading(true);
-    const r = await fetch("/api/improve", {
-      method: "POST", headers: { "Content-Type":"application/json" },
-      body: JSON.stringify({ cvText })
-    });
-    const json = await r.json();
-    setOut(json.improved);
-    setLoading(false);
-  };
-
-  return (
-    <Protected>
-      <h1 className="text-2xl font-bold mb-3">Corregir/Mejorar CV</h1>
-      <textarea className="border p-3 w-full h-60 rounded" placeholder="Pega tu CV..." value={cvText} onChange={e=>setCvText(e.target.value)} />
-      <button onClick={onFix} disabled={loading} className="mt-3 bg-blue-600 text-white px-4 py-2 rounded">{loading ? "Procesando..." : "Corregir"}</button>
-      {out && <pre className="bg-white border rounded p-3 mt-4 whitespace-pre-wrap">{out}</pre>}
-    </Protected>
-  );
-}
+      {out && (
+        <div className="container-card mt-6 p-4">
+          <h3 className="font-semibold">Versión mejorada</h3>
+          <pre className="mt-2 whitespace-pre-wrap text-sm">{out}</pre>
+        </div>
+      )}
+    </div>
+  </Protected>
+);
