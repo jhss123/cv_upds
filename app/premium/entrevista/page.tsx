@@ -21,14 +21,14 @@ export default function Entrevista() {
   }, []);
 
   const send = async () => {
-    const newHist = [...history, { role: "user", content: input }];
+    const newHist = [...history, { role: "user" as const, content: input }];
     setHistory(newHist); setInput("");
     const r = await fetch("/api/interview", {
       method:"POST", headers:{ "Content-Type":"application/json" },
       body: JSON.stringify({ role, history: newHist })
     });
     const json = await r.json();
-    setHistory([...newHist, { role: "assistant", content: json.reply }]);
+    setHistory([...newHist, { role: "assistant" as const, content: json.reply }]);
   };
 
   if (premium === false) return (
